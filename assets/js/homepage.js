@@ -16,7 +16,7 @@ var formSubmitHandler = function(event){
 }
 
 var getUserRepos = function(user) {
-    var apiURL = "https://api.github.com/users/octocat/repos"
+    var apiURL = "https://api.github.com/users/" + user + "/repos"
     
     fetch(apiURL).then(function(response) {
         if (response.ok) {
@@ -32,8 +32,6 @@ var getUserRepos = function(user) {
 }
 
 var displayRepos = function(repos, searchTerm) {
-    console.log(repos);
-    console.log(searchTerm);
     repoContainerEl.textContent = "";
     repoSearchTerm.textContent = searchTerm;
 
@@ -43,37 +41,38 @@ var displayRepos = function(repos, searchTerm) {
     }
 
     for (var i = 0; i < repos.length; i++) {
-        // format repo name
-        var repoName = repos[i].owner.login + "/" + repos[i].name;
+      // format repo name
+      var repoName = repos[i].owner.login + "/" + repos[i].name;
+    
+      // create a container for each repo
+      var repoEl = document.createElement("a");
+      repoEl.classList = "list-item flex-row justify-space-between align-center";
+      repoEl.setAttribute("href", "./single-repo.html?repo=" + repoName);
+
+      // create a span element to hold repository name
+      var titleEl = document.createElement("span");
+      titleEl.textContent = repoName;
       
-        // create a container for each repo
-        var repoEl = document.createElement("div");
-        repoEl.classList = "list-item flex-row justify-space-between align-center";
-      
-        // create a span element to hold repository name
-        var titleEl = document.createElement("span");
-        titleEl.textContent = repoName;
-      
-        // append to container
-        repoEl.appendChild(titleEl);
+      // append to container
+      repoEl.appendChild(titleEl);
         
-        var statusEl = document.createElement("span");
-        statusEl.classList = "flex-row align-center";
+      var statusEl = document.createElement("span");
+      statusEl.classList = "flex-row align-center";
 
-        // check if current repo has issues or not
-        if (repos[i].open_issues_count > 0) {
-            console.log("issues");
-            statusEl.innerHTML = "<i class='fas fa-times status-icon icon-danger'></i>" + repos[i].open_issues_count + " issue(s)";
-        } else {
-            console.log("no issues");
-            statusEl.innerHTML = "<i class='fas fa-check-square status-icon icon-success'></i>";
-        }
-
-        repoEl.appendChild(statusEl);
-
-        // append container to the dom
-        repoContainerEl.appendChild(repoEl);
+      // check if current repo has issues or not
+      if (repos[i].open_issues_count > 0) {
+        console.log("issues");
+        statusEl.innerHTML = "<i class='fas fa-times status-icon icon-danger'></i>" + repos[i].open_issues_count + " issue(s)";
+      } else {
+        console.log("no issues");
+        statusEl.innerHTML = "<i class='fas fa-check-square status-icon icon-success'></i>";
       }
+
+      repoEl.appendChild(statusEl);
+
+      // append container to the dom
+      repoContainerEl.appendChild(repoEl);
+    }
   };
 
 userFormEl.addEventListener("submit", formSubmitHandler)
